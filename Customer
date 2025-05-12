@@ -1,0 +1,138 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Customer {
+    private final String customerId;
+    private final int accountNo;
+    private final String name;
+    private double balance;
+    private final String encryptedPassword;
+    private final List<GiftCard> giftCards = new ArrayList<>();
+
+    public Customer(String customerId,int accountNo,String name,double balance,String encryptedPassword){
+        this.customerId = customerId;
+        this.accountNo = accountNo;
+        this.name = name;
+        this.balance = balance;
+        this.encryptedPassword = encryptedPassword;
+    }
+
+    public void createNewGiftCard(int cardNo,int pinNo){
+        GiftCard giftCard = new GiftCard(cardNo,pinNo);
+        giftCards.add(giftCard);
+    }
+
+    public void topUpExistingGiftCard(int giftCardNo,double amount){
+        GiftCard giftCard = retrieveGiftCard(giftCardNo);
+        if (giftCard==null){
+            System.out.println("Wrong gift card id");
+            return;
+        }
+        if (giftCard.isBlocked()){
+            System.out.println("Your card blocked");
+            return;
+        }
+
+        giftCard.setBalance(giftCard.getBalance()+amount);
+        balance = balance-amount;
+        System.out.println("Amount "+amount+" debited from your bank account");
+        System.out.println("Your current bank balance is : "+balance);
+        System.out.println("Gift card balance is :"+giftCard.getBalance());
+    }
+
+    public void showGiftCardTransactionHistory(int giftCardNo){
+        GiftCard giftCard = retrieveGiftCard(giftCardNo);
+        if (giftCard==null){
+            System.out.println("Wrong gift card id");
+            return;
+        }
+        if (giftCard.isBlocked()){
+            System.out.println("Your card blocked");
+            return;
+        }
+        giftCard.showTransactionHistory();
+    }
+
+    public void purchaseUsingGiftCard(int giftCardNo){
+        GiftCard giftCard = retrieveGiftCard(giftCardNo);
+        if (giftCard==null){
+            System.out.println("Wrong gift card id");
+            return;
+        }
+        if (giftCard.isBlocked()){
+            System.out.println("Your card blocked");
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Your bill amount");
+        double amount = scanner.nextInt();
+        System.out.println("Enter your card number");
+        int cardNumber = scanner.nextInt();
+        System.out.println("Enter pin");
+        int pinNumber = scanner.nextInt();
+
+        if (giftCard.getBalance()<amount){
+            System.out.println("Insufficient funds");
+            return ;
+        }
+
+        if (validateCardDetails(giftCard,cardNumber,pinNumber)){
+            debitGiftCard(giftCard,amount);
+            giftCard.addTransaction(new TransactionHistory(amount));
+            System.out.println("Purchase successful of "+amount+" Current gift card balance "+giftCard.getBalance());
+        }
+    }
+
+    private void debitGiftCard(GiftCard giftCard,double amount){
+        double balance = giftCard.getBalance();
+        giftCard.setBalance(balance-amount);
+    }
+
+    public void blockExistingGiftCard(int giftCardNo){
+        GiftCard giftCard = retrieveGiftCard(giftCardNo);
+        if (giftCard==null){
+            System.out.println("Wrong gift card id");
+            return;
+        }
+        giftCard.setBlocked(true);
+        System.out.println("Card Blocked");
+    }
+
+    public void giftToOthers(int giftCardNo,Customer receiver){
+        GiftCard giftCard = retrieveGiftCard(giftCardNo);
+        giftCards.remove(giftCard);
+        receiver.giftCards.add(giftCard);
+        System.out.println("Gift sent to customer "+name);
+    }
+
+    private GiftCard retrieveGiftCard(int giftCardNo){
+        for (GiftCard giftCard : giftCards){
+            if (giftCardNo==giftCard.getCardNo()){
+                return giftCard;
+            }
+        }
+        return null;
+    }
+
+    private boolean validateCardDetails(GiftCard giftCard,int cardNumber,int pinNumber){
+        return giftCard.getPinNo() == pinNumber && giftCard.getCardNo() == cardNumber;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public long getAccountNo() {
+        return accountNo;
+    }
+
+    public String getEncryptedPassword() {
+        return encryptedPassword;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
