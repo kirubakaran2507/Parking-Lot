@@ -1,0 +1,99 @@
+import java.util.InputMismatchException;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final Bank bank = Bank.getInstance();
+    private static final Random random = new Random();
+
+    public static void main(String[] args) throws InputMismatchException {
+        boolean isTrue = true;
+
+        while (isTrue){
+            System.out.println("1. Account Login");
+            System.out.println("2. Purchase");
+            System.out.println("3. Logout");
+            System.out.println("4. Exit");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.println("Customer id");
+                    String customerId = scanner.next();
+                    System.out.println("Enter password");
+                    String password = scanner.next();
+                    bank.accountLogin(customerId, password);
+                    if (bank.getCustomer()!=null)executeGiftCardModules();
+                }
+                case 2 -> {
+                    if (bank.getCustomer()==null){
+                        System.out.println("Login first");
+                        continue;
+                    }
+                    System.out.println("Gift Card no");
+                    int giftCardNo = scanner.nextInt();
+                    bank.purchaseUsingGiftCard(giftCardNo);
+                }
+                case 3 -> bank.logout();
+                case 4 -> isTrue = false;
+                default -> System.out.println("Invalid option");
+            }
+        }
+    }
+
+    private static void executeGiftCardModules(){
+        boolean isTrue = true;
+
+        while (isTrue) {
+            System.out.println("1. Create new gift card");
+            System.out.println("2. Top up existing gift card");
+            System.out.println("3. Show gift card transaction history");
+            System.out.println("4. Block existing gift card");
+            System.out.println("5. Gift to others");
+            System.out.println("6. Logout");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    int cardNo = random.nextInt(10000, 99999);
+                    System.out.println("Generated gift card number "+cardNo);
+                    int pinNo = random.nextInt(1000, 9999);
+                    System.out.println("Generated pin number " + pinNo);
+                    bank.createNewGiftCard(cardNo, pinNo);
+                    System.out.println("Gift card created");
+                    break;
+                case 2:
+                    System.out.println("Enter gift card no");
+                    int giftCardNo = scanner.nextInt();
+                    System.out.println("Enter amount");
+                    double amount = scanner.nextDouble();
+                    bank.topUpExistingGiftCard(giftCardNo, amount);
+                    break;
+                case 3:
+                    System.out.println("Enter gift card no");
+                    giftCardNo = scanner.nextInt();
+                    bank.showGiftCardTransactionHistory(giftCardNo);
+                    break;
+                case 4:
+                    System.out.println("Enter gift card no");
+                    giftCardNo = scanner.nextInt();
+                    bank.blockExistingGiftCard(giftCardNo);
+                    break;
+                case 5:
+                    System.out.println("Enter gift card no");
+                    giftCardNo = scanner.nextInt();
+                    System.out.println("Enter receiver's account number");
+                    int accountNumber = scanner.nextInt();
+                    bank.giftToOthers(giftCardNo,accountNumber);
+                    break;
+                case 6:
+                    isTrue = false;
+                    break;
+                default:
+                    System.out.println("Invalid option");
+            }
+        }
+    }
+}
