@@ -1,0 +1,53 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class GiftCard {
+    private final int cardNo;
+    private final int pinNo;
+    private double balance;
+    private boolean isBlocked;
+    private final List<TransactionHistory> transactionHistories;
+
+    public GiftCard(int cardNo,int pinNo){
+        this.cardNo = cardNo;
+        this.pinNo = pinNo;
+        balance = 0.0;
+        isBlocked = false;
+        transactionHistories = new ArrayList<>();
+    }
+
+    public void addTransaction(TransactionHistory transaction){
+        transactionHistories.add(transaction);
+    }
+
+    public void showTransactionHistory(){
+        for (TransactionHistory transactionHistory : transactionHistories){
+            transactionHistory.showTransaction();
+        }
+        System.out.println("-------------------------------");
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public int getPinNo() {
+        return pinNo;
+    }
+
+    public int getCardNo() {
+        return cardNo;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+}
