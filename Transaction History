@@ -1,0 +1,15 @@
+public class TransactionHistory {
+    private static int id = 0;
+    private final int transactionId;
+    private final double amount;
+
+    public TransactionHistory(double amount){
+        transactionId = ++id;
+        this.amount = amount;
+    }
+
+    public void showTransaction(){
+        System.out.println("Transaction id : "+transactionId + ", Amount spent : "+amount);
+
+    }
+}
