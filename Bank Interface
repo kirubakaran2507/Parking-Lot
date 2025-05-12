@@ -1,0 +1,4 @@
+public class BankInterface {
+    protected static Bank bank;
+    protected Customer customer;
+}
