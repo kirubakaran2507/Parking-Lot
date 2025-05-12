@@ -1,0 +1,120 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class Bank extends BankInterface{
+    private final List<Customer> customers;
+    private Bank() {
+        customers = new ArrayList<>();
+        customers.add(new Customer(generateCustomerId(),110110,"Kumar",10000,"ApipNbjm"));
+        customers.add(new Customer(generateCustomerId(),220220,"Madhu",20000,"Cboljoh"));
+        customers.add(new Customer(generateCustomerId(),330330,"Robin",30000,"kbwb22"));
+    }
+
+    public static Bank getInstance(){
+        if (bank==null){
+            bank = new Bank();
+        }
+        return bank;
+    }
+
+    private String generateCustomerId(){
+        return UUID.randomUUID().toString().substring(0,8);
+    }
+    public void accountLogin(String customerId,String password){
+        String encryptedPassword = encryptPassword(password);
+        Customer customer1 = retrieveCustomer(customerId,encryptedPassword);
+
+        if (isCustomerNotExists(customer1)){
+            System.out.println("Wrong customer details");
+            return;
+        }
+        customer = customer1;
+        System.out.println("Logged in");
+    }
+
+    public void createNewGiftCard(int cardNo,int pinNo){
+        customer.createNewGiftCard(cardNo,pinNo);
+    }
+
+    public void giftToOthers(int giftCardNo,int accountNumber){
+        Customer receiver = retrieveCustomerByAccountNumber(accountNumber);
+        if (isCustomerNotExists(receiver)){
+            System.out.println("Wrong account number");
+            return;
+        }
+        customer.giftToOthers(giftCardNo,receiver);
+    }
+
+    public void topUpExistingGiftCard(int giftCardNo,double amount){
+        if (customer.getBalance()<amount){
+            System.out.println("Insufficient funds. Balance : "+customer.getBalance());
+            return;
+        }
+        customer.topUpExistingGiftCard(giftCardNo,amount);
+    }
+
+    public void showGiftCardTransactionHistory(int giftCardNo){
+        customer.showGiftCardTransactionHistory(giftCardNo);
+    }
+
+    public void purchaseUsingGiftCard(int giftCardNo){
+        customer.purchaseUsingGiftCard(giftCardNo);
+    }
+
+    public void blockExistingGiftCard(int giftCardNo){
+        customer.blockExistingGiftCard(giftCardNo);
+    }
+
+    public void logout(){
+        customer = null;
+    }
+
+    private Customer retrieveCustomer(String customerId, String password) {
+        for (Customer customer : customers){
+            if (customerId.equals(customer.getCustomerId()) && customer.getEncryptedPassword().equals(password)){
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    private String encryptPassword(String password){
+        StringBuilder encryptedPassword = new StringBuilder();
+
+        for (int i=0;i<password.length();i++){
+            int ascii = password.charAt(i);
+            if (ascii >= 'a' && ascii <= 'z'){
+                ascii ++;
+                if (ascii > 'z')    ascii -= 26;
+            }
+            else if (ascii >= 'A' && ascii <= 'Z'){
+                ascii ++;
+                if (ascii > 'Z')    ascii -= 26;
+            }
+            else {
+                ascii ++;
+                if (ascii > '9')    ascii -= 10;
+            }
+            encryptedPassword.append((char) (ascii));
+        }
+        return encryptedPassword.toString();
+    }
+
+    private Customer retrieveCustomerByAccountNumber(int accountNumber) {
+        for (Customer customer : customers){
+            if (accountNumber == customer.getAccountNo()){
+                return customer;
+            }
+        }
+        return null;
+    }
+
+    private boolean isCustomerNotExists(Customer customer){
+        return (customer == null);
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+}
